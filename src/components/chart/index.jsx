@@ -1,9 +1,20 @@
 import { Line } from '@ant-design/charts';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 const Chart = () => {
     const [data, setData] = useState([]);
     const localCurr = 'PKR';
+
+    const config = {
+        data,
+        padding: 'auto',
+        xField: 'date',
+        yField: 'conversionValue',
+        yAxis: {
+            min: 10,
+            max: 0
+        }
+    };
 
     const generateGraphData = (data) => {
         let DataArr = [];
@@ -23,7 +34,7 @@ const Chart = () => {
         return { DataArr, min, max };
     };
 
-    const getData = () => {
+    const getData = useCallback(() => {
         fetch('FixerDummyResponse.json',
             {
                 headers : { 
@@ -41,23 +52,11 @@ const Chart = () => {
             config.yAxis.max = max + 10;
             config.yAxis.min = min - 10;
         });
-    }
+    },[config.yAxis]);
 
     useEffect(() => {
         getData();
-    },[]);
-
-  
-    const config = {
-        data,
-        padding: 'auto',
-        xField: 'date',
-        yField: 'conversionValue',
-        yAxis: {
-            min: 10,
-            max: 0
-        }
-    };
+    },[getData]);
 
   return (
     <>

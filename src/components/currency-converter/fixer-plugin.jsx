@@ -1,12 +1,15 @@
 import { Button } from 'antd';
-import axios from 'axios';
+import moment from 'moment';
 
-
+//https://fixer.io/
 const FixerPlugin = () => {
 
-    const apiKey = 'JrY5tpMsTvOM3zFx1h3UdVaAU5ZzMxDW';
+    const fromDate = moment().subtract(1, 'month').format('YYYY-MM-DD');
+    const toDate = moment().format('YYYY-MM-DD');
+    const baseCurr = 'USD';
+    const targetCurr = 'PKR';
     
-    const url = "https://api.apilayer.com/fixer/timeseries?start_date=2023-02-04&end_date=2023-04-04&base=USD&symbols=PKR";
+    const url = `https://api.apilayer.com/fixer/timeseries?start_date=${fromDate}&end_date=${toDate}&base=${baseCurr}&symbols=${targetCurr}`;
     // const url = `https://data.fixer.io/api/latest?access_key=${apiKey}&base=USD&symbols=PKR`;
 
 
@@ -25,16 +28,6 @@ const FixerPlugin = () => {
         .then(response => response.text())
         .then(result => console.log(result))
         .catch(error => console.log('error', error));
-
-        // var axiosRequestOptions = {
-        //     redirect: 'follow',
-        //     headers: myHeaders
-        // };
-        // axios
-        // .get(url, axiosRequestOptions)
-        // .then(response => response.text())
-        // .then(result => console.log('response', result))
-        // .catch(err => console.log('Err', err))
     }
     return ( 
         <>
