@@ -1,6 +1,7 @@
 import { Button } from 'antd';
 import axios from 'axios';
 
+// https://www.xe.com/xecurrencydata/
 function CurrencyDataXEPlugin() {
     const appId = "nisum415426488";
     const apiKey = "llcmg5tpsv5skvhqeav82ives3";
