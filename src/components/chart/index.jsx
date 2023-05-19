@@ -1,70 +1,69 @@
 import { Line } from '@ant-design/charts';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 const Chart = () => {
-    const [conversionRateData, setConversionRateData] = useState([])
-    const getData = () => {
+    const [data, setData] = useState([]);
+    const localCurr = 'PKR';
+
+    const config = {
+        data,
+        padding: 'auto',
+        xField: 'date',
+        yField: 'conversionValue',
+        yAxis: {
+            min: 10,
+            max: 0
+        }
+    };
+
+    const generateGraphData = (data) => {
+        let DataArr = [];
+        let max = 0;
+        let min = 0;
+        for (const key in data) {
+            if (Object.hasOwnProperty.call(data, key)) {
+                const rateObj = data[key];
+                const conversionValue = rateObj[localCurr];
+                DataArr.push({"date": key, conversionValue});
+
+                max = (conversionValue > max) ? conversionValue : max;
+                min = (conversionValue < min) ? conversionValue : min;
+            }
+        }
+
+        return { DataArr, min, max };
+    };
+
+    const getData = useCallback(() => {
         fetch('FixerDummyResponse.json',
             {
-            headers : { 
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
+                headers : { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
             }
         )
         .then( resp => resp.json() )
         .then(response => {
-            console.log('response', response.rates);
-            let DataArr = [];
-            for (const key in response.rates) {
-                if (Object.hasOwnProperty.call(response.rates, key)) {
-                    const rate = response.rates[key];
-                    DataArr.push({date: key, conversionValue: rate['PKR']})
-                }
-            }
-            setConversionRateData(DataArr);
-            console.log('setConversionRateData', conversionRateData);
-
+            const {DataArr, min, max} = generateGraphData(response.rates);
+            
+            setData(DataArr);
+            
+            config.yAxis.max = max + 10;
+            config.yAxis.min = min - 10;
         });
-      }
-      useEffect(()=>{
-        getData()
-      },[])
-    const data = [
-        { year: '1991', value: 3 },
-        { year: '1992', value: 4 },
-        { year: '1993', value: 3.5 },
-        { year: '1994', value: 5 },
-        { year: '1995', value: 4.9 },
-        { year: '1996', value: 6 },
-        { year: '1997', value: 7 },
-        { year: '1998', value: 9 },
-        { year: '1999', value: 13 },
-      ];
-    
-    const config = {
-        data,
-        width: 800,
-        height: 400,
-        autoFit: false,
-        xField: 'year',
-        yField: 'value',
-        point: {
-          size: 5,
-          shape: 'point',
-        },
-        label: {
-          style: {
-            fill: '#aaa',
-          },
-        },
-      };
-    return (
-        <div>
-            <h1>Currency history chart</h1>
-            { conversionRateData.length > 0 && <Line {...config} /> }
-        </div>
-    );
+    },[]);
+
+    useEffect(() => {
+        getData();
+    },[getData]);
+
+  return (
+    <>
+        <h1>Currency history chart</h1>
+        <Line {...config} />;
+    </>
+    )
 }
 
 export default Chart;
