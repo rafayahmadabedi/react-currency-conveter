@@ -52,7 +52,7 @@ const Chart = () => {
             config.yAxis.max = max + 10;
             config.yAxis.min = min - 10;
         });
-    },[config.yAxis]);
+    },[]);
 
     useEffect(() => {
         getData();
